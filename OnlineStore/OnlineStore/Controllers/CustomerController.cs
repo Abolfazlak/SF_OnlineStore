@@ -4,7 +4,7 @@ using OnlineStore.Controllers;
 using OnlineStore.Models;
 using OnlineStore.Services;
 
-namespace SOnlineStore.Controllers
+namespace OnlineStore.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

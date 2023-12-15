@@ -165,7 +165,7 @@ namespace OnlineStore.Services
 
 
 
-        private double CalculatePrice(long price, double discount)
+        public double CalculatePrice(long price, double discount)
         {
             try
             {

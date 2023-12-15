@@ -6,10 +6,10 @@ namespace OnlineStore.Repositories
 {
     public class CustomerRepository : ICustomerRepository
     {
-        private readonly ILogger<ProductRepository> _logger;
+        private readonly ILogger<CustomerRepository> _logger;
         private readonly ProductDbContext _context;
 
-        public CustomerRepository(ILogger<ProductRepository> logger, ProductDbContext context)
+        public CustomerRepository(ILogger<CustomerRepository> logger, ProductDbContext context)
         {
             _logger = logger;
             _context = context;

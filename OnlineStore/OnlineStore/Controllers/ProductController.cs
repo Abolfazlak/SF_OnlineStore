@@ -24,7 +24,11 @@ namespace OnlineStore.Controllers
         {
             try
             {
-                var res = await _productService.AddProductToDb(dto);
+                var isUnique = await _productService.CheckTitleUniqueness(dto.Title);
+                if (!isUnique)
+                    return BadRequest("profile title is already exists");
+
+                var res = await _productService.AddProductToDbService(dto);
 
                 if (res)
                 {
@@ -35,7 +39,7 @@ namespace OnlineStore.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"exception occured in AddToCart: {ex.Message}");
+                _logger.LogError($"exception occured in AddProduct: {ex.Message}");
                 return Problem(ex.Message);
             }
         }
@@ -46,7 +50,7 @@ namespace OnlineStore.Controllers
         {
             try
             {
-                var res = await _productService.UpdateInventoryCountById(dto);
+                var res = await _productService.UpdateInventoryCountByIdService(dto);
 
                 if (res)
                 {
@@ -69,7 +73,7 @@ namespace OnlineStore.Controllers
         {
             try
             {
-                var res = await _productService.GetProductWithProperPrice(id);
+                var res = await _productService.GetProductWithProperPriceService(id);
 
                 if (res != null)
                 {

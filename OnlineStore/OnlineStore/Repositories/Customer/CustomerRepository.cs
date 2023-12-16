@@ -45,10 +45,11 @@ namespace OnlineStore.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogError($"exception occured in AddOrderToDb: {ex.Message}");
+                _logger.LogError($"exception occured in CheckUserByName: {ex.Message}");
                 return false;
             }
         }
+
         public async Task<bool> CheckUserById(int id)
         {
             try
@@ -59,10 +60,11 @@ namespace OnlineStore.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogError($"exception occured in AddOrderToDb: {ex.Message}");
+                _logger.LogError($"exception occured in CheckUserById: {ex.Message}");
                 return false;
             }
         }
+
         public async Task<bool> CreateUser(string username)
         {
             try
@@ -81,6 +83,18 @@ namespace OnlineStore.Repositories
             }
         }
 
+
+
+         /*
+         * 
+         * 
+         * HELPER FUNCTIONS
+         * 
+         * 
+         */
+
+
+        //create new order by given dto and dateTime now
         private Order? CreateNewOrder (BuyProductDto dto, DateTime now)
         {
             try
@@ -101,6 +115,7 @@ namespace OnlineStore.Repositories
             }
         }
 
+        //save changes to db asynchronous
         private async Task SaveChangesToDatabase()
         {
             await _context.SaveChangesAsync();

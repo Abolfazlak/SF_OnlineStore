@@ -40,7 +40,7 @@ namespace OnlineStore.Repositories
         }
 
 
-        public async Task<bool> UpdateInventoryCountOfProduct(ProductDto dto)
+        public async Task<bool> UpdateProductInDb(ProductDto dto)
         {
             try
             {
@@ -59,7 +59,7 @@ namespace OnlineStore.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogError($"exception occured in AddProductToDb: {ex.Message}");
+                _logger.LogError($"exception occured in UpdateProductInDb: {ex.Message}");
                 return false;
             }
         }
@@ -92,6 +92,30 @@ namespace OnlineStore.Repositories
             }
         }
 
+        public async Task<bool> CheckProductByTitle(string title)
+        {
+            try
+            {
+                var product = await _context.Products.Where(u => u.Title.Equals(title)).FirstOrDefaultAsync();
+
+                return product == null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"exception occured in CheckProductByTitle: {ex.Message}");
+                return false;
+            }
+        }
+
+        /*
+         * 
+         * 
+         * HELPER FUNCTIONS
+         * 
+         * 
+         */
+
+        //create new product by given AddProductDto and product's count 
         private Product? CreateNewProduct(AddProductDto dto, int count)
         {
             try
@@ -108,11 +132,12 @@ namespace OnlineStore.Repositories
             }
             catch(Exception ex)
             {
-                _logger.LogError($"exception occured in AddProductToDb: {ex.Message}");
+                _logger.LogError($"exception occured in CreateNewProduct by dto and count: {ex.Message}");
                 return null;
             }
         }
 
+        //create new product by given ProductDto (ovrloading)
         private Product? CreateNewProduct(ProductDto dto)
         {
             try
@@ -130,11 +155,12 @@ namespace OnlineStore.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogError($"exception occured in AddProductToDb: {ex.Message}");
+                _logger.LogError($"exception occured in CreateNewProduct by dto: {ex.Message}");
                 return null;
             }
         }
 
+        //save changes to db asynchronous
         private async Task SaveChangesToDatabase()
         {
             await _context.SaveChangesAsync();

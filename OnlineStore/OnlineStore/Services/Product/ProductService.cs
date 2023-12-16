@@ -22,15 +22,12 @@ namespace OnlineStore.Services
             _logger = logger;
         }
 
-        public async Task<bool> AddProductToDb(AddProductDto dto)
+        public async Task<bool> AddProductToDbService(AddProductDto dto)
         {
             try
             {
                 var count = GetInventoryCount();
                 var isAddedSuccessfuly = await _productRepository.AddProductToDb(dto, count);
-
-                _logger.LogInformation($"product successfuly add to databse.");
-
                 return isAddedSuccessfuly;
             }
             catch (Exception ex)
@@ -40,7 +37,7 @@ namespace OnlineStore.Services
             }
         }
 
-        public async Task<bool> UpdateInventoryCountById(IncreaseInventoryCountDto dto)
+        public async Task<bool> UpdateInventoryCountByIdService(IncreaseInventoryCountDto dto)
         {
             try
             {
@@ -52,7 +49,7 @@ namespace OnlineStore.Services
                 }
                 product.InventoryCount = dto.Count;
 
-                var isAddedSuccessfuly = await UpdateInventoryCount(product);
+                var isAddedSuccessfuly = await UpdateProductService(product);
 
                 return isAddedSuccessfuly;
 
@@ -64,7 +61,7 @@ namespace OnlineStore.Services
             }
         }
 
-        public async Task<ProductWithProperPriceDto?> GetProductWithProperPrice(int productId)
+        public async Task<ProductWithProperPriceDto?> GetProductWithProperPriceService(int productId)
         {
             try
             {
@@ -96,7 +93,7 @@ namespace OnlineStore.Services
             }
         }
 
-        public async Task<bool> DecreaseFromProductCount(int productId)
+        public async Task<bool> DecreaseFromProductCountService(int productId)
         {
             try
             {
@@ -107,19 +104,19 @@ namespace OnlineStore.Services
 
                 product.InventoryCount -= 1;
 
-                var isAddedSuccessfuly = await UpdateInventoryCount(product);
+                var isAddedSuccessfuly = await UpdateProductService(product);
 
                 return isAddedSuccessfuly;
 
             }
             catch (Exception ex)
             {
-                _logger.LogError($"exception occured in UpdateInventoryCountById: {ex.Message}");
+                _logger.LogError($"exception occured in DecreaseFromProductCountService: {ex.Message}");
                 return false;
             }
         }
 
-        public async Task<bool> CheckProductByCountAndId(int productId)
+        public async Task<bool> CheckProductByCountAndIdService(int productId)
         {
             try
             {
@@ -139,13 +136,20 @@ namespace OnlineStore.Services
             }
         }
 
+        /*
+         * 
+         * 
+         * HELPER FUNCTIONS
+         * 
+         * 
+         */
 
-
-        private async Task<bool> UpdateInventoryCount(ProductDto product)
+        //update inventory count of a product
+        private async Task<bool> UpdateProductService(ProductDto product)
         {
             try
             {
-                var isAddedSuccessfuly = await _productRepository.UpdateInventoryCountOfProduct(product);
+                var isAddedSuccessfuly = await _productRepository.UpdateProductInDb(product);
 
                 if (isAddedSuccessfuly)
                 {
@@ -158,13 +162,13 @@ namespace OnlineStore.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError($"exception occured in UpdateInventoryCount: {ex.Message}");
+                _logger.LogError($"exception occured in UpdateProductService: {ex.Message}");
                 return false;
             }
         }
 
 
-
+        //calculate price if discount is greater than 0
         public double CalculatePrice(long price, double discount)
         {
             try
@@ -179,6 +183,9 @@ namespace OnlineStore.Services
             }
         }
 
+        //create product that contain price after discounting
+        //if discount is 0, HasDiscount will be false
+        //and PriceAfterDiscount = OriginalPrice
         private static ProductWithProperPriceDto? CreateProductWithProperPrice(ProductDto product, bool discount, double price)
         {
             var productWithProperPrice = new ProductWithProperPriceDto
@@ -196,6 +203,9 @@ namespace OnlineStore.Services
         }
 
 
+        //first of all, check that product with given Id is in redis or not
+        //if exists, retuen that product
+        //else get product from db and set it into cache for next requests
 
 #pragma warning disable CS8613 // Nullability of reference types in return type doesn't match implicitly implemented member.
         private async Task<ProductDto?> GetProductById(int productId)
@@ -227,12 +237,37 @@ namespace OnlineStore.Services
             }
         }
 
+        //set data to cache with expiration date
         private void SetDataToCache(string id, ProductDto dto)
         {
-            var expirationTime = GetExpirationTime();
-            _cacheService.SetData(id, dto, expirationTime);
+            try
+            {
+                var expirationTime = GetExpirationTime();
+                _cacheService.SetData(id, dto, expirationTime);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"exception occured in SetDataToCache: {ex.Message}");
+            }
         }
 
+
+        public async Task<bool> CheckTitleUniqueness(string title)
+        {
+            try
+            {
+                var IsTitleUnique = await _productRepository.CheckProductByTitle(title);
+                return IsTitleUnique;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"exception occured in CheckTitleUniqueness: {ex.Message}");
+                return false;
+            }
+        }
+
+
+        //get predefined inventory count from appsetting
         private int GetInventoryCount()
         {
             try
@@ -247,6 +282,7 @@ namespace OnlineStore.Services
             }
         }
 
+        //get expiration time of redis key from appsetting
         private DateTimeOffset GetExpirationTime()
         {
             try

@@ -27,7 +27,7 @@ namespace OnlineStore.Services
                 {
                     return false;
                 }
-                var checkProductCountAndId = await _productService.CheckProductByCountAndId(dto.ProductId);
+                var checkProductCountAndId = await _productService.CheckProductByCountAndIdService(dto.ProductId);
 
                 if(!checkProductCountAndId)
                 {
@@ -38,7 +38,7 @@ namespace OnlineStore.Services
 
                 if (isSuccessfulyOrdered)
                 {
-                    var increseSuccessfulyFromProductCount = await _productService.DecreaseFromProductCount(dto.ProductId);
+                    var increseSuccessfulyFromProductCount = await _productService.DecreaseFromProductCountService(dto.ProductId);
 
                     return increseSuccessfulyFromProductCount;
                 }

@@ -19,7 +19,7 @@ namespace OnlineStore_Test.ProductTest
             };
 
             var productServiceMock = new Mock<IProductService>();
-            productServiceMock.Setup(s => s.GetProductWithProperPrice(id)).ReturnsAsync(productDto);
+            productServiceMock.Setup(s => s.GetProductWithProperPriceService(id)).ReturnsAsync(productDto);
 
             var loggerMock = new Mock<ILogger<ProductController>>();
             var controller = new ProductController(productServiceMock.Object, loggerMock.Object);
@@ -48,7 +48,7 @@ namespace OnlineStore_Test.ProductTest
             var id = 3;
 
             var productServiceMock = new Mock<IProductService>();
-            productServiceMock.Setup(s => s.GetProductWithProperPrice(id)).ReturnsAsync((ProductWithProperPriceDto?)null);
+            productServiceMock.Setup(s => s.GetProductWithProperPriceService(id)).ReturnsAsync((ProductWithProperPriceDto?)null);
 
             var loggerMock = new Mock<ILogger<ProductController>>();
             var controller = new ProductController(productServiceMock.Object, loggerMock.Object);

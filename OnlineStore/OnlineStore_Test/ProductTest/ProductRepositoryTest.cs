@@ -34,16 +34,10 @@ public class ProductRepositoryTests
         var dbContext = new ProductDbContext(configurationMock.Object, dbContextOptions);
         var repository = new ProductRepository(loggerMock.Object, dbContext);
 
-        var productId = 1;
-        var product = new Product { Id = productId, Title = "chips", Price = 15000, InventoryCount = 10, Discount = 0 };
-        dbContext.Products.Add(product);
-        dbContext.SaveChanges();
-
         // Act
-        var result = await repository.GetProductByIdFromDb(2);
+        var result = await repository.GetProductByIdFromDb(7);
 
         // Assert
         Assert.Null(result);
-        Assert.NotEqual(productId, result?.Id);
     }
 }

@@ -26,7 +26,7 @@ namespace OnlineStore_Test.ProductTest
             productRepositoryMock.Setup(x => x.GetProductByIdFromDb(productId)).ReturnsAsync(productDto);
 
             // Act
-            var result = await productService.GetProductWithProperPrice(productId);
+            var result = await productService.GetProductWithProperPriceService(productId);
 
             // Assert
             Assert.NotNull(result);
